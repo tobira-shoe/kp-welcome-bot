@@ -22,7 +22,7 @@ bot.onText(/\/change_text (.+) (.+)/, function (msg, match) {
     const [, password, newText] = match;
 
     if (password === (process.env.PASS || 'legezza_')) {
-        WELCOME_MESSAGE = newText;
+        // WELCOME_MESSAGE = newText;
 
         bot.sendMessage(msg.chat.id, "Текст изменем");
     }
