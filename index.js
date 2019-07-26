@@ -3,8 +3,10 @@ const TelegramBot = require('node-telegram-bot-api');
 let WELCOME_MESSAGE = 'Привет {kroshka}! Прочитай гайды в закрепе. Это чат потока. Тут около 15+ 2-3 курсников и люди с твоего потока.  Мы тут только что ты помогать и травить байки)';
 
 const bot = new TelegramBot(process.env.BOT_TOKEN, {
-    polling: true,
-    timeout: 500
+    webHook: {
+        port: process.env.PORT,
+        host: process.env.HOST
+    }
 });
 
 bot.on('message', msg =>{
@@ -18,14 +20,14 @@ bot.on('message', msg =>{
     }
 });
 
-// bot.onText(/\/change_text (.+) (.+)/, function (msg, match) {
-//     const [, password, newText] = match;
-//
-//     if (password === (process.env.PASS || 'legezza_')) {
-//         // WELCOME_MESSAGE = newText;
-//
-//         bot.sendMessage(msg.chat.id, "Текст изменем");
-//     }
-// });
+bot.onText(/\/change_text (.+) (.+)/, function (msg, match) {
+    const [, password, newText] = match;
+
+    if (password === (process.env.PASS || 'legezza_')) {
+        WELCOME_MESSAGE = newText;
+
+        bot.sendMessage(msg.chat.id, "Текст изменем");
+    }
+});
 
 bot.on('polling_error', console.error);
