@@ -4,20 +4,23 @@ const TelegramBot = require('node-telegram-bot-api');
 
 const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true, timeout: 500 });
 
-bot.on('message', (message) =>{
-    if (message.new_chat_members !== undefined) {
-        console.log(message.new_chat_member.username);
-        console.log(message.new_chat_member.id);
+bot.on('message', msg =>{
+    if (msg.new_chat_members !== undefined) {
+        console.log(msg.new_chat_member.username);
+        console.log(msg.new_chat_member.id);
 
-        bot.sendMessage(message.chat.id, WELCOME_MESSAGE);
+        const text = WELCOME_MESSAGE.replace('{$kroshka}', `@${msg.new_chat_member.username}`);
+
+        bot.sendMessage(msg.chat.id, text);
     }
 });
 
-bot.onText(/\/change_text (.+)/, function onEchoText(msg, match) {
-    let cmd = match[1].split(' ');
+bot.onText(/\/change_text (.+) (.+)/, function onEchoText(msg, match) {
+    const [, password, newText] = match[1];
 
-    if (cmd[0] === (process.env.PASS || 'legezza_')) {
-        WELCOME_MESSAGE = cmd.slice(1).join(' ');
+    if (password === (process.env.PASS || 'legezza_')) {
+        WELCOME_MESSAGE = newText;
+
         bot.sendMessage(msg.chat.id, "Текст изменем");
     }
 });
