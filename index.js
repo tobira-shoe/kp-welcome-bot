@@ -1,6 +1,7 @@
 const TelegramBot = require('node-telegram-bot-api');
 
-let WELCOME_MESSAGE = 'Привет {kroshka}! Прочитай гайды в закрепе. Это чат потока. Тут около 15+ 2-3 курсников и люди с твоего потока.  Мы тут только что ты помогать и травить байки)';
+// let WELCOME_MESSAGE = 'Привет {kroshka}! Прочитай гайды в закрепе. Это чат потока. Тут около 15+ 2-3 курсников и люди с твоего потока.  Мы тут только что ты помогать и травить байки)';
+let WELCOME_MESSAGE = 'Привет {kroshka} =)';
 
 const bot = new TelegramBot(process.env.BOT_TOKEN, {
     polling: true,
@@ -18,13 +19,14 @@ bot.on('message', msg =>{
     }
 });
 
-bot.onText(/\/change_text (.+) (.+)/, function (msg, match) {
+bot.onText(/\/change_text (\S+) (.+)/, function (msg, match) {
+    console.log(match);
     const [, password, newText] = match;
 
-    if (password === (process.env.PASS || 'legezza_')) {
+    if (password === (process.env.PASS || 'apirol')) {
         WELCOME_MESSAGE = newText;
 
-        bot.sendMessage(msg.chat.id, "Текст изменем");
+        bot.sendMessage(msg.chat.id, `Текст изменен на: ${WELCOME_MESSAGE}`);
     }
 });
 
