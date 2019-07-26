@@ -4,7 +4,7 @@ let WELCOME_MESSAGE = 'Привет {kroshka}! Прочитай гайды в з
 
 const bot = new TelegramBot(process.env.BOT_TOKEN, {
     webHook: {
-        port: process.env.PORT,
+        port: process.env.PORT || 8084,
         host: process.env.HOST
     }
 });
