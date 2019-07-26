@@ -1,7 +1,7 @@
 const TelegramBot = require('node-telegram-bot-api');
+const fs = require('fs');
 
-// let WELCOME_MESSAGE = 'Привет {kroshka}! Прочитай гайды в закрепе. Это чат потока. Тут около 15+ 2-3 курсников и люди с твоего потока.  Мы тут только что ты помогать и травить байки)';
-let WELCOME_MESSAGE = 'Привет {kroshka} =)';
+let greeting = fs.readFileSync('./greeting.txt', { encoding: 'utf-8' });
 
 const bot = new TelegramBot(process.env.BOT_TOKEN, {
     polling: true,
@@ -9,24 +9,30 @@ const bot = new TelegramBot(process.env.BOT_TOKEN, {
 });
 
 bot.on('message', msg =>{
-    if (msg.new_chat_members !== undefined) {
-        console.log(msg.new_chat_member.username);
-        console.log(msg.new_chat_member.id);
+    if (msg.new_chat_members) {
+        const { username, id } = msg.new_chat_member;
 
-        const text = WELCOME_MESSAGE.replace('{kroshka}', `@${msg.new_chat_member.username}`);
+        console.log(`message received from @${username} ${id}`);
+
+        const text = greeting.replace('{kroshka}', `@${username}`);
 
         bot.sendMessage(msg.chat.id, text);
     }
 });
 
-bot.onText(/\/change_text (\S+) (.+)/, function (msg, match) {
-    console.log(match);
+bot.onText(/\/change_text (\S+) (.+)/, (msg, match) => {
     const [, password, newText] = match;
 
     if (password === (process.env.PASS || 'apirol')) {
-        WELCOME_MESSAGE = newText;
+        try {
+            fs.writeFileSync('./greeting.txt', newText, { encoding: 'utf-8'});
 
-        bot.sendMessage(msg.chat.id, `Текст изменен на: ${WELCOME_MESSAGE}`);
+            greeting = newText;
+
+            bot.sendMessage(msg.chat.id, `Текст изменен на: *${newText}*`);
+        } catch (err) {
+            console.error(err)
+        }
     }
 });
 
