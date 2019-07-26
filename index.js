@@ -3,10 +3,8 @@ const TelegramBot = require('node-telegram-bot-api');
 let WELCOME_MESSAGE = 'Привет {kroshka}! Прочитай гайды в закрепе. Это чат потока. Тут около 15+ 2-3 курсников и люди с твоего потока.  Мы тут только что ты помогать и травить байки)';
 
 const bot = new TelegramBot(process.env.BOT_TOKEN, {
-    webHook: {
-        port: process.env.PORT || 8084,
-        host: process.env.HOST
-    }
+    polling: true,
+    timeout: 500
 });
 
 bot.on('message', msg =>{
@@ -31,3 +29,10 @@ bot.onText(/\/change_text (.+) (.+)/, function (msg, match) {
 });
 
 bot.on('polling_error', console.error);
+
+// hack
+const http = require('http');
+http.createServer((req, res) => {
+    res.write('Hello World!');
+    res.end();
+}).listen(process.env.PORT || 8084);
