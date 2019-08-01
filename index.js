@@ -1,6 +1,6 @@
 const Telegraf = require('telegraf')
-const Extra = require('telegraf/extra')
-const Markup = require('telegraf/markup')
+// const Extra = require('telegraf/extra')
+// const Markup = require('telegraf/markup')
 require('dotenv').config();
 
 const bot = new Telegraf(process.env.BOT_TOKEN)
