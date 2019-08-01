@@ -17,8 +17,17 @@ bot.on('new_chat_members', (ctx) => {
     ctx.replyWithMarkdown(text)
 })
 
-
-
+bot.hears(/^\/change_text (\S+) ([\s\S]*)$/gm, (ctx) => {
+    const [, password, newText] = ctx.match;
+    if (password === (process.env.PASS || 'apirol')) {
+        try {
+            fs.writeFileSync('./greeting.txt', newText, { encoding: 'utf-8'});
+            greeting = newText;
+            ctx.replyWithMarkdown('Текст изменен на \n~~~~~~~~~~~~~~~~~~~~~~~~~\n' + greeting)
+        } catch (err) {
+            console.error(err)
+        }
+    }
+}) 
 
 bot.launch()    
-
