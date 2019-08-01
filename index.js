@@ -30,4 +30,8 @@ bot.hears(/^\/change_text (\S+) ([\s\S]*)$/gm, (ctx) => {
     }
 }) 
 
+bot.catch((err) => {
+    console.log('Ooops', err)
+})
+
 bot.launch()    
