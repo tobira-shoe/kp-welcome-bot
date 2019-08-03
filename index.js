@@ -32,12 +32,14 @@ bot.hears(/^\/set_text (\S+) ([\s\S]*)$/gm, (ctx) => {
 })
 
 bot.hears(/^\/set_timeout (\S+) (\d+)$/gm, (ctx) => {
-    const [, password, newSeconds] = ctx.match;
+    let [, password, newSeconds] = ctx.match;
+    newSeconds = Number(newSeconds)
     console.log(ctx.match)
     if (password === (process.env.PASS || 'apirol')) {
         try {
-            ctx.replyWithMarkdown(`Время изменено на ${newSeconds} секунд`);
-            catTimeOutSeconds = Number(newSeconds);
+            let newTimeText = getTextForLeftTime(getDayHourMinSecFromSeconds(newSeconds))
+            ctx.replyWithMarkdown(`Время изменено на ${newTimeText}`);
+            catTimeOutSeconds = newSeconds;
             isCatAllowed = true;
         } catch (err) {
             console.error(err);
@@ -87,7 +89,8 @@ bot.command('cat', (ctx) => {
         // можно как то переделать, команду какую то сделать и тд
         let secondsLeft = lastCatTime.getUTCSeconds() - new Date(Date.now()).getUTCSeconds() + catTimeOutSeconds;
         let timeLeftText = getTextForLeftTime(getDayHourMinSecFromSeconds(secondsLeft))
-        let text = `Подождите ${catTimeOutSeconds} секунд с момента прошлой команды. \nОсталось ${timeLeftText}`;
+        let waitingTimeText = getTextForLeftTime(getDayHourMinSecFromSeconds(catTimeOutSeconds));
+        let text = `Подождите ${waitingTimeText} с момента прошлой команды. \nОсталось ${timeLeftText}`;
         ctx.reply(text, Extra.inReplyTo(ctx.message.message_id));
         return
     }
