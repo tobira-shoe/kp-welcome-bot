@@ -45,12 +45,49 @@ bot.hears(/^\/set_timeout (\S+) (\d+)$/gm, (ctx) => {
     }
 })
 
+function getDayHourMinSecFromSeconds(_seconds) {
+    let [days, hours, minutes, seconds] = [0, 0, 0, _seconds]
+    if (seconds > 60) {
+        minutes = Math.floor(seconds / 60)
+        seconds %= 60
+    }
+    if (minutes > 60) {
+        hours = Math.floor(minutes / 60)
+        minutes %= 60
+    }
+    if (hours > 24) {
+        days = Math.floor(hours / 60)
+        hours %= 24
+    }
+    return {
+        days: days, 
+        hours: hours, 
+        minutes: minutes, 
+        seconds: seconds
+    }
+}
+
+/*
+    Да, да - хардкод еще тот
+*/
+function getTextForLeftTime(obj) {
+    let text = '';
+    // @todo сделать какие то красивые функции для вывода время, но всем похуй
+    // и никто все равно не будет почти этим пользоватся
+    text += obj.days    == 0 ? '' : obj.days + (obj.days < 5 ? ' дня ' : ' дней ');
+    text += obj.hours   == 0 ? '' : obj.hours + ' часа(ов) ';
+    text += obj.minutes == 0 ? '' : obj.minutes + ' минут '
+    text += obj.seconds + ' секунд(ы) '
+    return text;
+}
+
 
 bot.command('cat', (ctx) => {
     if (!isCatAllowed) {
         // можно как то переделать, команду какую то сделать и тд
         let secondsLeft = lastCatTime.getUTCSeconds() - new Date(Date.now()).getUTCSeconds() + catTimeOutSeconds;
-        let text = `Подождите ${catTimeOutSeconds} секунд с момента прошлой команды. Осталось ${secondsLeft} секунд`;
+        let timeLeftText = getTextForLeftTime(getDayHourMinSecFromSeconds(secondsLeft))
+        let text = `Подождите ${catTimeOutSeconds} секунд с момента прошлой команды. \nОсталось ${timeLeftText}`;
         ctx.reply(text, Extra.inReplyTo(ctx.message.message_id));
         return
     }
