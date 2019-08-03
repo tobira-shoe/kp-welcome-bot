@@ -7,8 +7,9 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 const fs = require('fs');
 let greeting = fs.readFileSync('./greeting.txt', { encoding: 'utf-8' });
 
-var catTimeOutSeconds = Number(process.env.CAT_TIMEOUT_SECONDS) || 50
-var isCatAllowed = true
+let catTimeOutSeconds = Number(process.env.CAT_TIMEOUT_SECONDS) || 50
+let isCatAllowed = true
+let lastCatTime = new Date(Date.now())
 
 
 bot.on('new_chat_members', (ctx) => {
@@ -48,10 +49,12 @@ bot.hears(/^\/set_timeout (\S+) (\d+)$/gm, (ctx) => {
 bot.command('cat', (ctx) => {
     if (!isCatAllowed) {
         // можно как то переделать, команду какую то сделать и тд
-        ctx.reply(`Подождите ${catTimeOutSeconds} секунд с момента прошлой команды`, Extra.inReplyTo(ctx.message.message_id))
+        let secondsLeft = lastCatTime.getUTCSeconds() - new Date(Date.now()).getUTCSeconds() + catTimeOutSeconds;
+        let text = `Подождите ${catTimeOutSeconds} секунд с момента прошлой команды. Осталось ${secondsLeft} секунд`;
+        ctx.reply(text, Extra.inReplyTo(ctx.message.message_id));
         return
     }
-    var request = require('request');
+    let request = require('request');
     request('https://api.thecatapi.com/v1/images/search', (error, response, body) => {
     if (response.statusCode != 200) {
         console.error(error);
@@ -59,7 +62,8 @@ bot.command('cat', (ctx) => {
         let imageUrl = JSON.parse(body)[0]['url'];
         ctx.replyWithPhoto({url: imageUrl}, Extra.inReplyTo(ctx.message.message_id));
         isCatAllowed = false;
-        setTimeout(() => isCatAllowed = true, catTimeOutSeconds * 1000)
+        lastCatTime = new Date(Date.now());
+        setTimeout(() => isCatAllowed = true, catTimeOutSeconds * 1000);
     }
 });
 })
