@@ -10,7 +10,7 @@ const GREETING_FILENAME = './greeting.txt';
 
 const CATS_URL = 'https://api.thecatapi.com/v1/images/search';
 const CATS_TIMEOUT = Number(process.env.CAT_TIMEOUT_SECONDS) || 30;
-const QUESTION_TIMEOUT = Number(process.env.QUESTION_TIMEOUT_SECONDS) || 1;
+const QUESTION_TIMEOUT = Number(process.env.QUESTION_TIMEOUT_SECONDS) || 30;
 const funnyAnswers = [
     "Лучше бы уроки учил",
     "Сходи в душ, вонючка 🌚",
