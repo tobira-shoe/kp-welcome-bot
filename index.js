@@ -12,8 +12,19 @@ const CATS_URL = 'https://api.thecatapi.com/v1/images/search';
 const CATS_TIMEOUT = Number(process.env.CAT_TIMEOUT_SECONDS) || 30;
 const QUESTION_TIMEOUT = Number(process.env.QUESTION_TIMEOUT_SECONDS) || 1;
 const funnyAnswers = [
-    "Дыа =)",
-    "Нит -_-",
+    "Лучше бы уроки учил",
+    "Сходи в душ, вонючка 🌚",
+    "Не исключено🤫",
+    "Сто процентов",
+    "Да",
+    "Нет",
+    "Нет нет нет неееет!🤬",
+    "Да, да, да и еще раз - да😬",
+    "Ну конечно!",
+    "Сомневаюсь",
+    "Ой ну хватит",
+    "Сам отвечай на такие вопросы 😤 бака",
+    "Нит 😑",
     "Хз \uD83E\uDD37\uD83C\uDFFC\u200D♂️"
 ];
 
@@ -24,9 +35,15 @@ let questionTimeoutID = null;
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
+function extractUsername(user) {
+    return `${user.first_name || ''} ${user.last_name || ''}`;
+}
+
 bot.on('new_chat_members', (ctx) => {
-    const userName = `${ctx.update.message.new_chat_member.first_name || ''} ${ctx.update.message.new_chat_member.last_name || ''}`;
-    const text = greeting.replace('{kroshka}', `[${userName}](tg://user?id=${ctx.update.message.new_chat_member.id})`);
+    const user = ctx.message.new_chat_member;
+
+    const text = greeting.replace('{kroshka}', `[${extractUsername(user)}](tg://user?id=${user.id})`);
+
     ctx.replyWithMarkdown(text);
 });
 
@@ -56,7 +73,10 @@ bot.hears(/question (.*)/giu, (ctx) => {
 
     const answer = randomElement(funnyAnswers);
 
-    ctx.replyWithMarkdown(`*- ${answer}*`,  Extra.inReplyTo(ctx.message.message_id));
+    ctx.replyWithMarkdown(`
+Отвечаю 🖕 тебе:
+
+- ${answer}`,  Extra.inReplyTo(ctx.message.message_id));
 
     questionTimeoutID = setTimeout(() => {
         clearTimeout(questionTimeoutID);
